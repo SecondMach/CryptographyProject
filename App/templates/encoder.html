@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+        <title>CipherScope | Neural Encryption Engine</title>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+        <script id="tailwind-config">
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        colors: {
+                            "surface-container": "#11192e",
+                            "surface-bright": "#222b47",
+                            "on-tertiary": "#006657",
+                            "surface-container-low": "#0c1326",
+                            "on-error": "#490013",
+                            "on-tertiary-fixed": "#00483d",
+                            "on-primary-container": "#350062",
+                            "on-secondary-container": "#fff5f8",
+                            "on-surface-variant": "#a5aac2",
+                            "secondary-container": "#b00091",
+                            "surface-variant": "#1c253e",
+                            "surface-container-high": "#171f36",
+                            "primary": "#ca98ff",
+                            "on-primary-fixed": "#000000",
+                            "on-surface": "#dfe4fe",
+                            "secondary-dim": "#ff5ed5",
+                            "on-tertiary-fixed-variant": "#006858",
+                            "on-secondary": "#430035",
+                            "secondary-fixed-dim": "#ffa9e0",
+                            "tertiary-fixed-dim": "#3dedce",
+                            "tertiary-container": "#52fcdc",
+                            "on-tertiary-container": "#005d4f",
+                            "background": "#070d1f",
+                            "surface-tint": "#ca98ff",
+                            "surface-dim": "#070d1f",
+                            "tertiary-dim": "#33e7c9",
+                            "inverse-on-surface": "#4f5469",
+                            "primary-fixed-dim": "#b672ff",
+                            "surface-container-highest": "#1c253e",
+                            "secondary": "#ff5ed5",
+                            "primary-dim": "#9b44f2",
+                            "error-container": "#a70138",
+                            "tertiary-fixed": "#52fcdc",
+                            "on-secondary-fixed": "#660053",
+                            "outline": "#6f758b",
+                            "primary-container": "#c085ff",
+                            "inverse-surface": "#faf8ff",
+                            "on-primary-fixed-variant": "#420078",
+                            "error": "#ff6e84",
+                            "surface-container-lowest": "#000000",
+                            "inverse-primary": "#8426db",
+                            "primary-fixed": "#c085ff",
+                            "on-secondary-fixed-variant": "#98007c",
+                            "surface": "#070d1f",
+                            "on-primary": "#45007d",
+                            "on-error-container": "#ffb2b9",
+                            "on-background": "#dfe4fe",
+                            "secondary-fixed": "#ffbfe5",
+                            "tertiary": "#b7ffec",
+                            "outline-variant": "#41475b",
+                            "error-dim": "#d73357"
+                        },
+                        fontFamily: {
+                            "headline": ["Space Grotesk"],
+                            "body": ["Inter"],
+                            "label": ["Inter"]
+                        },
+                        borderRadius: {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                        },
+                    },
+                },
+            }
+        </script>
+
+        <style>
+            body {
+                font-family: 'Inter', sans-serif;
+            }
+            .font-headline {
+                font-family: 'Space Grotesk', sans-serif;
+            }
+            .glass-panel {
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(65, 71, 91, 0.15);
+            }
+            .neon-pulse {
+                box-shadow: 0 0 15px rgba(153, 66, 240, 0.3);
+            }
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+        </style>
+    </head>
+
+    <body class="bg-background text-on-surface min-h-screen flex flex-col">
+        <!-- TopNavBar -->
+        <nav class="bg-slate-950/60 backdrop-blur-xl docked full-width top-0 sticky z-50 shadow-[0px_20px_40px_rgba(153,66,240,0.12)]">
+            <div class="flex justify-between items-center w-full px-8 h-20 bg-slate-900">
+                <div class="flex items-center gap-12">
+                    <span class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 font-['Space_Grotesk'] tracking-tight">CipherScope</span>
+                    <!-- Desktop Nav -->
+                    <div class="hidden md:flex gap-8 items-center">
+                        <a class="text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight hover:bg-white/5 px-3 py-1 rounded transition-all duration-300" href="/">Homepage</a>
+                        <a class="text-purple-400 border-b-2 border-purple-500 pb-1 font-['Space_Grotesk'] font-bold tracking-tight active:scale-95 transition-transform" href="/encoder">Encoder</a>
+                        <a class="text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight hover:bg-white/5 px-3 py-1 rounded transition-all duration-300" href="/decoder">Analyzer</a>
+                        <!-- <a class="text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight hover:bg-white/5 px-3 py-1 rounded transition-all duration-300" href="#">Vault</a> -->
+                        <!-- <a class="text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight hover:bg-white/5 px-3 py-1 rounded transition-all duration-300" href="#">Reports</a> -->
+                    </div>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="hidden lg:flex items-center bg-surface-container-low px-4 py-2 rounded-lg border border-outline-variant/20">
+                        <span class="material-symbols-outlined text-outline text-sm mr-2">search</span>
+                        <input class="bg-transparent border-none focus:ring-0 text-sm text-on-surface-variant w-48" placeholder="Search entropy logs..." type="text"/>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button class="text-slate-400 hover:text-purple-400 transition-colors active:scale-95">
+                            <span class="material-symbols-outlined">notifications</span>
+                        </button>
+                        <button class="text-slate-400 hover:text-purple-400 transition-colors active:scale-95">
+                            <span class="material-symbols-outlined">settings</span>
+                        </button>
+                        <div class="h-10 w-10 rounded-full border-2 border-primary-dim/30 p-0.5">
+                            <img alt="Operator Profile" class="rounded-full w-full h-full object-cover" data-alt="Close-up portrait of a security operator avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZWCRuaiRavuNIS0QN0gdQUg-F7ZOfG0BLuJcT02cCVKfGraLCi8RQWv0FFt7dJ4jffY5mS4aAQtQruQ0sXrix1_3NDFQ0AtrinfMs61C6j7hS2penWD-63JHAahoqiZ6YZ9PyKKM2PNOfV0uYdzTaTl0kXcDXf9wN5q7PIgeNlIEGH2O2sEJ8m9qrVkoJiqOReoDg0TSJ-Nxz5kqAp4F_dZJ-SURsGYMRTlLSAgeedBkY6yDHyfBfB0-YkMByQI8fN2QwpoWLLwS6"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-grow max-w-7xl mx-auto w-full px-8 py-12">
+            <!-- Hero Section -->
+            <header class="mb-16 relative">
+                <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary-dim/10 rounded-full blur-[120px]"></div>
+                <h1 class="text-6xl font-headline font-bold text-on-surface tracking-tighter mb-4">CipherScope</h1>
+                <p class="text-xl text-on-surface-variant max-w-2xl font-body leading-relaxed">
+                    Encrypt plaintext using selectable cryptographic algorithms.
+                </p>
+            </header>
+
+            <!-- Main Dashboard Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+
+                <!-- LEFT -->
+                <div class="flex flex-col gap-8">
+                    <section class="bg-surface-container-high rounded-xl p-8">
+                        <!-- DROPDOWN -->
+                        <div class="mb-6">
+                            <label class="text-xs uppercase tracking-widest text-on-surface-variant mb-2 block">
+                                Algorithm
+                            </label>
+                            <select id="algorithmSelect" class="w-full bg-surface-container-low border border-outline-variant/20 rounded-lg p-3">
+                                <option value="AES">AES</option>
+                                <option value="DES_FAMILY">DES</option>
+                                <option value="RC4">RC4</option>
+                                <option value="AFFINE">Affine</option>
+                            </select>
+                        </div>
+
+                        <div class="relative mb-6">
+                            <textarea id="inputText" class="w-full h-64 bg-surface-container-lowest border border-outline-variant/20 rounded-lg p-6 font-mono text-sm text-primary/80 focus:ring-1 focus:ring-primary-dim/50 focus:border-primary-dim transition-all resize-none" placeholder="Enter (at least 10 words) plaintext..."></textarea>
+                            <div id="bufferCount" class="absolute bottom-4 right-4 text-[10px] font-mono text-outline-variant uppercase">
+                                Buffer: 0 / 65536
+                            </div>
+                        </div>
+
+                        <!-- BUTTON -->
+                        <button onclick="encryptText()" class="mt-6 w-full bg-gradient-to-r from-primary-dim to-secondary py-4 rounded-xl font-headline font-bold uppercase tracking-widest">
+                            Encrypt Text
+                        </button>
+
+                    </section>
+                </div>
+
+                <!-- RIGHT -->
+                <div class="flex flex-col gap-8">
+                    <section id="textresultPanel" class="w-full h-full bg-surface-container-highest rounded-xl p-8 border-l-4 border-primary-dim relative">
+
+                        <div class="flex justify-between items-start mb-4">
+                            <label class="text-xs font-label uppercase tracking-widest text-on-surface-variant">
+                                Encryption Result
+                            </label>
+
+                            <!-- COPY BUTTON -->
+                            <button id="copyBtn" onclick="copyText()" class="flex items-center gap-2 bg-surface-container-high px-5 py-3 rounded-xl text-sm font-bold text-on-surface hover:bg-surface-bright transition-all border border-outline-variant/20 shadow-md hover:shadow-lg active:scale-95">
+                                <span class="material-symbols-outlined text-lg">content_copy</span>
+                                <span id="copyTextLabel">Copy</span>
+                            </button>
+                        </div>
+
+                        <!-- OUTPUT BOX -->
+                        <textarea 
+                            id="outputText"
+                            class="w-full h-64 bg-surface-container-lowest border border-outline-variant/20 rounded-lg p-6 font-mono text-sm text-tertiary resize-none"
+                            placeholder="Encrypted text will appear here..."
+                            readonly></textarea>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-slate-950 border-t border-white/5 py-12">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center px-8">
+                <div class="mb-8 md:mb-0">
+                    <p class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500">© 2024 CipherScope AI. Neural encryption active.</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-8">
+                    <a class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500 hover:text-purple-400 underline decoration-purple-500/30 underline-offset-4 transition-all opacity-80 hover:opacity-100 transition-opacity" href="#">Documentation</a>
+                    <a class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500 hover:text-purple-400 underline decoration-purple-500/30 underline-offset-4 transition-all opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy Policy</a>
+                    <a class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500 hover:text-purple-400 underline decoration-purple-500/30 underline-offset-4 transition-all opacity-80 hover:opacity-100 transition-opacity" href="#">Security Audit</a>
+                    <a class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500 hover:text-purple-400 underline decoration-purple-500/30 underline-offset-4 transition-all opacity-80 hover:opacity-100 transition-opacity" href="#">API Status</a>
+                </div>
+            </div>
+        </footer>
+        <!-- script -->
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </body>
+</html>
