@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+		<title>CipherScope | Neural Ciphertext Classification</title>
+		<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+		<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&;family=Inter:wght@300;400;500;600;700&;display=swap" rel="stylesheet"/>
+		<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&;display=swap" rel="stylesheet"/>
+		<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&;display=swap" rel="stylesheet"/>
+		
+		<script id="tailwind-config">
+			tailwind.config = {
+				darkMode: "class",
+				theme: {
+					extend: {
+						colors: {
+							"secondary-fixed": "#ffbfe5",
+							"primary": "#ca98ff",
+							"on-error-container": "#ffb2b9",
+							"on-tertiary-fixed-variant": "#006858",
+							"on-secondary": "#430035",
+							"outline": "#6f758b",
+							"background": "#070d1f",
+							"error": "#ff6e84",
+							"primary-dim": "#9b44f2",
+							"on-surface": "#dfe4fe",
+							"on-surface-variant": "#a5aac2",
+							"secondary": "#ff5ed5",
+							"outline-variant": "#41475b",
+							"primary-fixed": "#c085ff",
+							"tertiary": "#b7ffec",
+							"on-primary": "#45007d",
+							"inverse-primary": "#8426db",
+							"primary-fixed-dim": "#b672ff",
+							"on-tertiary": "#006657",
+							"on-secondary-fixed-variant": "#98007c",
+							"tertiary-fixed-dim": "#3dedce",
+							"on-primary-container": "#350062",
+							"on-error": "#490013",
+							"secondary-fixed-dim": "#ffa9e0",
+							"tertiary-dim": "#33e7c9",
+							"surface-variant": "#1c253e",
+							"surface-container-highest": "#1c253e",
+							"on-tertiary-container": "#005d4f",
+							"inverse-on-surface": "#4f5469",
+							"surface-container": "#11192e",
+							"inverse-surface": "#faf8ff",
+							"secondary-dim": "#ff5ed5",
+							"on-background": "#dfe4fe",
+							"surface-tint": "#ca98ff",
+							"surface-bright": "#222b47",
+							"surface-container-lowest": "#000000",
+							"on-secondary-container": "#fff5f8",
+							"primary-container": "#c085ff",
+							"surface": "#070d1f",
+							"surface-container-high": "#171f36",
+							"tertiary-fixed": "#52fcdc",
+							"surface-dim": "#070d1f",
+							"on-primary-fixed-variant": "#420078",
+							"on-secondary-fixed": "#660053",
+							"on-primary-fixed": "#000000",
+							"tertiary-container": "#52fcdc",
+							"surface-container-low": "#0c1326",
+							"on-tertiary-fixed": "#00483d",
+							"error-dim": "#d73357",
+							"error-container": "#a70138",
+							"secondary-container": "#b00091"
+						},
+						fontFamily: {
+							"headline": ["Space Grotesk"],
+							"body": ["Inter"],
+							"label": ["Inter"]
+						},
+						borderRadius: {
+							"DEFAULT": "0.25rem",
+							"lg": "0.5rem",
+							"xl": "0.75rem",
+							"full": "9999px"
+						},
+					},
+				},
+			}
+		</script>
+
+		<style>
+			body {
+				font-family: 'Inter', sans-serif;
+				background-color: #070d1f;
+				color: #dfe4fe;
+			}
+			.font-headline {
+				font-family: 'Space Grotesk', sans-serif;
+			}
+			.glass-panel {
+				background: rgba(28, 37, 62, 0.6);
+				backdrop-filter: blur(20px);
+				-webkit-backdrop-filter: blur(20px);
+			}
+			.hero-gradient {
+				background: radial-gradient(circle at 50% 50%, rgba(153, 66, 240, 0.15) 0%, rgba(7, 13, 31, 0) 70%);
+			}
+			.text-glow {
+				text-shadow: 0 0 30px rgba(153, 66, 240, 0.5);
+			}
+		</style>
+	</head>
+
+	<body class="bg-surface selection:bg-primary-dim/30">
+		<!-- TopNavBar -->
+		<nav class="bg-[#070d1f]/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-[#41475b]/15 shadow-[0px_20px_40px_rgba(153,66,240,0.12)]">
+			<div class="flex justify-between items-center w-full px-8 py-4 max-w-none">
+				<div class="text-2xl font-black text-[#dfe4fe] tracking-tighter font-headline">
+					CipherScope
+				</div>
+				<div class="hidden md:flex items-center space-x-8">
+					<a class="font-headline font-bold tracking-tight text-[#9b44f2] border-b-2 border-[#9b44f2] pb-1" href="/">Homepage</a>
+					<a class="font-headline font-bold tracking-tight text-[#a5aac2] hover:text-[#dfe4fe] transition-colors" href="/encoder">Encoder</a>
+					<a class="font-headline font-bold tracking-tight text-[#a5aac2] hover:text-[#dfe4fe] transition-colors" href="/decoder">Analyzer</a>
+					<!-- <a class="font-headline font-bold tracking-tight text-[#a5aac2] hover:text-[#dfe4fe] transition-colors" href="#">API</a> -->
+				</div>
+				<div class="flex items-center space-x-6">
+					<div class="flex items-center bg-surface-container-low px-4 py-2 rounded-lg border border-outline-variant/15">
+						<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
+						<input class="bg-transparent border-none text-sm focus:ring-0 text-on-surface w-32 md:w-48 placeholder:text-on-surface-variant" placeholder="Quick Search..." type="text"/>
+					</div>
+					<div class="flex space-x-4">
+						<button class="material-symbols-outlined text-[#a5aac2] hover:text-[#dfe4fe] transition-all scale-95 active:scale-90">account_circle</button>
+						<button class="material-symbols-outlined text-[#a5aac2] hover:text-[#dfe4fe] transition-all scale-95 active:scale-90">settings</button>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+		<main class="relative">
+			<!-- Hero Section -->
+			<section class="relative min-h-[921px] flex flex-col justify-center items-center px-8 overflow-hidden hero-gradient">
+				<div class="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary-dim/10 blur-[120px] rounded-full pointer-events-none"></div>
+				<div class="relative z-10 max-w-5xl w-full text-center space-y-8">
+					<div class="inline-flex items-center px-4 py-2 bg-surface-container-highest/40 border border-primary-dim/20 rounded-full mb-6">
+						<span class="flex h-2 w-2 rounded-full bg-tertiary mr-3 shadow-[0_0_10px_#b7ffec]"></span>
+						<span class="text-tertiary text-xs font-bold tracking-widest uppercase font-label">Neural Engine v4.2 Status: Optimal</span>
+					</div>
+					<h1 class="font-headline text-7xl md:text-9xl font-black text-on-surface tracking-tighter leading-tight text-glow">
+                    	CipherScope
+                	</h1>
+					<p class="text-xl md:text-3xl font-light text-on-surface-variant max-w-3xl mx-auto leading-relaxed">
+                    	AI-powered <span class="text-secondary font-medium">ciphertext classification</span> for high-stakes cryptographic forensic analysis.
+                	</p>
+					<div class="flex flex-col md:flex-row items-center justify-center gap-6 pt-10">
+						<a href="/decoder">
+							<button class="px-10 py-5 bg-gradient-to-r from-primary-dim to-secondary text-on-primary font-bold text-lg rounded-xl shadow-[0_10px_30px_rgba(153,66,240,0.3)] hover:scale-105 transition-transform active:scale-95">
+								Start Analysis
+							</button>
+						</a>
+						<button class="px-10 py-5 glass-panel border border-outline-variant/30 text-on-surface font-bold text-lg rounded-xl hover:bg-surface-container-highest transition-colors">
+                        	Documentation
+                    	</button>
+					</div>
+				</div>
+				<!-- Floating Abstract Image/Decoration -->
+				<div class="absolute bottom-0 w-full h-64 bg-gradient-to-t from-background to-transparent z-20"></div>
+				<div class="absolute -bottom-40 left-1/2 -translate-x-1/2 w-full max-w-7xl opacity-40">
+					<img alt="" class="w-full rounded-t-[100px] mask-gradient" data-alt="Futuristic cyber security grid pattern with purple neon lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAk9B2V7oQMSe9wZaeXY5phTqENYJr6mw-oN2StTYiXSvJ7FdFOydOwldNP9-ktRUfsdFiKU8M7J9mco5VWPrncaRFkaaOTymfAlvnIVlV3cInG_P4hqS2MUsDVdcI_eGOimrwb3-WMFRzgIR68ocUcMtbvLQGmDPpJxkdE65EmHryjXr3K3JGpB9cghawFAnxVOo8mKPkMo9wnH83iy9SqFPkuPZbYz9IVbncuPyXSK4qmXOJhUCOg1pr0b703qpWJI-LirCxH2nzD"/>
+				</div>
+			</section>
+			<!-- Bento Capabilities Section -->
+			<section class="py-32 px-8 max-w-7xl mx-auto">
+				<div class="mb-20 space-y-4">
+					<h2 class="font-headline text-4xl font-bold text-on-surface">Neural Detection Matrix</h2>
+					<p class="text-on-surface-variant max-w-xl text-lg">Our proprietary AI identifies encryption standards with 99.8% precision by analyzing entropy distribution and bit-level patterns.</p>
+				</div>
+				<div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[600px]">
+					<!-- AES Card -->
+					<div class="md:col-span-8 bg-surface-container-high rounded-3xl p-8 relative overflow-hidden group">
+						<div class="relative z-10 h-full flex flex-col justify-between">
+							<div>
+								<div class="w-12 h-12 bg-primary-dim/20 rounded-xl flex items-center justify-center mb-6">
+									<span class="material-symbols-outlined text-primary-dim">verified_user</span>
+								</div>
+								<h3 class="font-headline text-3xl font-bold mb-4">AES Recognition</h3>
+								<p class="text-on-surface-variant max-w-md">Instantly distinguish between 128, 192, and 256-bit AES block ciphers even in stripped header scenarios.</p>
+							</div>
+							<div class="flex gap-4">
+								<span class="px-3 py-1 bg-surface-container-lowest rounded-md text-xs font-mono text-primary">AES-128</span>
+								<span class="px-3 py-1 bg-surface-container-lowest rounded-md text-xs font-mono text-primary">AES-256</span>
+								<span class="px-3 py-1 bg-surface-container-lowest rounded-md text-xs font-mono text-primary">ECB/CBC</span>
+							</div>
+						</div>
+						<img alt="" class="absolute top-0 right-0 w-1/2 h-full object-cover opacity-20 group-hover:opacity-40 transition-opacity" data-alt="Abstract glowing circuit board macro close-up" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbGDRaELTo__0_eZQ3C5oW6nwDPVLma-KsNw0Xo_lHeIEfoOgrlC_v64vRfMFpN5HmulLcFuxMbaFCePWi04ImreiOwrPUnyFgn3exWDIdyohp0NArXQPNjSdUj4Ay4wAtwJu2367qTiS2dSNK7sHgZ6ZhQbrKvTT86AKXWgPFk5hymjxtqWzH4pl7Kbvp17Kzao0G5oJxNtVH2-N5WR_ngRZjJFdSlEAEutoyUlh0yXd-IU--M1K8-nGMt284XMcQcWptoPMZJvDX"/>
+					</div>
+					<!-- DES/3DES Card -->
+					<div class="md:col-span-4 bg-surface-container-highest rounded-3xl p-8 border border-outline-variant/10 flex flex-col">
+						<div class="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-6">
+							<span class="material-symbols-outlined text-secondary">history</span>
+						</div>
+						<h3 class="font-headline text-2xl font-bold mb-4">Legacy Protocols</h3>
+						<p class="text-on-surface-variant mb-8">Detection of aging standards like DES and 3DES for legacy data recovery and auditing.</p>
+						<div class="mt-auto p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/15">
+							<div class="flex items-center justify-between mb-2">
+								<span class="text-xs text-on-surface-variant">Confidence Level</span>
+								<span class="text-xs text-tertiary">94%</span>
+							</div>
+							<div class="w-full bg-surface-container-high h-2 rounded-full">
+								<div class="bg-gradient-to-r from-primary to-secondary h-full w-[94%] rounded-full"></div>
+							</div>
+						</div>
+					</div>
+					<!-- Visualizations Card -->
+					<div class="md:col-span-4 bg-surface-container-low rounded-3xl p-8 border border-outline-variant/10">
+						<div class="w-12 h-12 bg-tertiary/20 rounded-xl flex items-center justify-center mb-6">
+							<span class="material-symbols-outlined text-tertiary">analytics</span>
+						</div>
+						<h3 class="font-headline text-2xl font-bold mb-4">Entropy Mapping</h3>
+						<p class="text-on-surface-variant">Generate 3D entropy maps to visualize bit-density and potential patterns in encrypted blobs.</p>
+					</div>
+					<!-- API Card -->
+					<div class="md:col-span-8 bg-[#000000] rounded-3xl p-8 relative overflow-hidden flex flex-col justify-center">
+						<div class="relative z-10 flex flex-col md:flex-row items-center justify-between">
+							<div class="max-w-md">
+								<h3 class="font-headline text-3xl font-bold mb-4 text-[#dfe4fe]">Developer First API</h3>
+								<p class="text-on-surface-variant">Seamlessly integrate CipherScope's classification engine into your existing security pipeline with our robust REST API.</p>
+							</div>
+							<div class="bg-surface-container-high p-4 rounded-xl font-mono text-sm border border-outline-variant/30 mt-6 md:mt-0">
+								<div class="flex space-x-2 mb-2">
+									<div class="w-2 h-2 rounded-full bg-error"></div>
+									<div class="w-2 h-2 rounded-full bg-secondary"></div>
+									<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+								</div>
+								<span class="text-secondary">POST</span> /v1/classify<br/>
+								<span class="text-tertiary">{ "blob": "0x4A7F..." }</span>
+							</div>
+						</div>
+						<!-- Subtle background glow -->
+						<div class="absolute -right-20 -bottom-20 w-64 h-64 bg-primary-dim/10 blur-3xl rounded-full"></div>
+					</div>
+				</div>
+			</section>
+			<!-- Stats Section -->
+			<section class="py-24 bg-surface-container-lowest">
+				<div class="max-w-7xl mx-auto px-8 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+					<div class="space-y-2">
+						<div class="font-headline text-5xl font-black text-on-surface">1.2M+</div>
+						<div class="text-on-surface-variant uppercase text-xs tracking-widest font-bold">Blobs Analyzed</div>
+					</div>
+					<div class="space-y-2">
+						<div class="font-headline text-5xl font-black text-primary">250+</div>
+						<div class="text-on-surface-variant uppercase text-xs tracking-widest font-bold">Cipher Types</div>
+					</div>
+					<div class="space-y-2">
+						<div class="font-headline text-5xl font-black text-on-surface">99.8%</div>
+						<div class="text-on-surface-variant uppercase text-xs tracking-widest font-bold">Model Accuracy</div>
+					</div>
+					<div class="space-y-2">
+						<div class="font-headline text-5xl font-black text-secondary">12ms</div>
+						<div class="text-on-surface-variant uppercase text-xs tracking-widest font-bold">Avg Response</div>
+					</div>
+				</div>
+			</section>
+			<!-- CTA Section -->
+			<section class="py-32 px-8">
+				<div class="max-w-5xl mx-auto glass-panel rounded-[40px] p-12 md:p-20 text-center relative overflow-hidden border border-outline-variant/20">
+					<div class="absolute inset-0 bg-gradient-to-br from-primary-dim/5 to-secondary/5"></div>
+					<div class="relative z-10 space-y-8">
+						<h2 class="font-headline text-5xl md:text-6xl font-bold text-on-surface tracking-tight">Ready to expose the hidden?</h2>
+						<p class="text-on-surface-variant text-xl max-w-2xl mx-auto">Join the elite cybersecurity teams using CipherScope to identify threat patterns in seconds, not hours.</p>
+						<div class="pt-6">
+							<button class="px-12 py-6 bg-on-surface text-surface font-black text-xl rounded-2xl hover:bg-primary transition-colors hover:text-on-primary">
+								Create Your Free Account
+							</button>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+		<!-- Footer -->
+		<footer class="bg-[#000000] w-full py-12 px-8 mt-auto border-t border-transparent">
+			<div class="bg-gradient-to-r from-transparent via-[#41475b]/20 to-transparent h-[1px] mb-8 max-w-7xl mx-auto"></div>
+			<div class="flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto space-y-8 md:space-y-0">
+				<div class="flex flex-col items-center md:items-start">
+					<div class="font-headline text-xl font-black tracking-tighter text-[#dfe4fe] mb-2">CipherScope Labs</div>
+					<p class="font-['Inter'] text-sm antialiased text-[#a5aac2] text-center md:text-left">
+						© 2024 CipherScope Labs. Neural Status: Optimal.
+					</p>
+				</div>
+				<div class="flex flex-wrap justify-center gap-8">
+					<a class="font-['Inter'] text-sm antialiased text-[#a5aac2] hover:text-[#9942F0] transition-colors underline decoration-2 underline-offset-4" href="#">Documentation</a>
+					<a class="font-['Inter'] text-sm antialiased text-[#a5aac2] hover:text-[#9942F0] transition-colors underline decoration-2 underline-offset-4" href="#">Privacy Policy</a>
+					<a class="font-['Inter'] text-sm antialiased text-[#a5aac2] hover:text-[#9942F0] transition-colors underline decoration-2 underline-offset-4" href="#">Security Audit</a>
+					<a class="font-['Inter'] text-sm antialiased text-[#a5aac2] hover:text-[#9942F0] transition-colors underline decoration-2 underline-offset-4" href="#">Support</a>
+				</div>
+				<div class="flex space-x-6">
+					<a class="text-[#a5aac2] hover:text-[#9942F0] transition-all" href="#">
+						<span class="material-symbols-outlined">terminal</span>
+					</a>
+					<a class="text-[#a5aac2] hover:text-[#9942F0] transition-all" href="#">
+						<span class="material-symbols-outlined">hub</span>
+					</a>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
