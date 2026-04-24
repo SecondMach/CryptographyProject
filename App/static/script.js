@@ -3,7 +3,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const textarea = document.getElementById("inputText");
     const buffer = document.getElementById("bufferCount");
     const analyzeBtn = document.getElementById("analyzeBtn");
-    const encryptBtn = document.querySelector("button[onclick='encryptText()']");
+    const encryptBtn = document.getElementById("encryptBtn");
+
+    const menuBtn = document.getElementById("menuBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+        });
+
+        mobileMenu.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", () => {
+                mobileMenu.classList.add("hidden");
+            });
+        });
+    }
 
     // Update buffer count + reset UI on typing
     if (textarea && buffer) {
