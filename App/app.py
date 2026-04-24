@@ -5,22 +5,26 @@ import numpy as np
 from collections import Counter
 from math import log2
 import time
+import os
+
 from Crypto.Cipher import AES, DES, ARC4
 from Crypto.Random import get_random_bytes
+from Crypto.Util.Padding import pad
 
 app = Flask(__name__)
+
+# ------------------ Load Model ------------------ #
 
 # Load your trained model and encoder
 model = joblib.load("model.pkl")
 encoder = joblib.load("encoder.pkl")
 
-
 # ------------------ Feature Functions ------------------ #
+
 def entropy(data):
     counts = Counter(data)
     probs = [c / len(data) for c in counts.values()]
     return -sum(p * log2(p) for p in probs)
-
 
 def byte_frequency(data):
     freq = np.zeros(256)
@@ -28,59 +32,43 @@ def byte_frequency(data):
         freq[b] += 1
     return freq / len(data)
 
+def block_repetition(data, block_size=16):
+    blocks = [data[i:i+block_size] for i in range(0, len(data), block_size)]
+    if len(blocks) == 0:
+        return 0
+    return 1 - (len(set(blocks)) / len(blocks))
 
-def byte_variance(freq):
-    return np.var(freq)
+def autocorrelation(data):
+    if len(data) < 2:
+        return 0.0
 
+    arr = np.frombuffer(data, dtype=np.uint8).astype(np.float64)
 
-def chi_square(freq):
-    expected = 1 / 256
-    return np.sum(((freq - expected) ** 2) / expected)
+    if np.std(arr) == 0:
+        return 0.0
 
-
-def transition_matrix(data):
-    transitions = np.zeros((16, 16))
-    for i in range(len(data) - 1):
-        a = data[i] % 16
-        b = data[i + 1] % 16
-        transitions[a][b] += 1
-    transitions = transitions.flatten()
-    return transitions / np.sum(transitions)
-
-
-def block_features(data, block_size=8):
-    blocks = [data[i:i + block_size] for i in range(0, len(data), block_size)]
-    entropies = []
-
-    for block in blocks:
-        counts = Counter(block)
-        probs = [c / len(block) for c in counts.values()]
-        ent = -sum(p * log2(p) for p in probs)
-        entropies.append(ent)
-
-    return np.array([
-        np.mean(entropies),
-        np.var(entropies),
-        len(set(blocks)) / len(blocks)
-    ])
-
+    return float(np.corrcoef(arr[:-1], arr[1:])[0, 1])
 
 def extract_features(ciphertext):
     data = bytes.fromhex(ciphertext)
 
+    arr = np.frombuffer(data, dtype=np.uint8)
+
     ent = entropy(data)
-    freq = byte_frequency(data)
-    var = byte_variance(freq)
-    chi = chi_square(freq)
+
+    # frequency
+    freq = np.zeros(256)
+    for b in arr:
+        freq[b] += 1
+    freq = freq / len(arr)
+
+    rep = block_repetition(data)
+    auto = autocorrelation(data)
     length = len(data)
-    transitions = transition_matrix(data)
-    block_feat = block_features(data)
 
     return np.concatenate((
-        [ent, var, chi, length],
-        block_feat,
-        freq,
-        transitions
+        [ent, rep, auto, length],
+        freq
     )).reshape(1, -1)
 
 def entropy_chunks(data, chunk_size=16):
@@ -88,29 +76,36 @@ def entropy_chunks(data, chunk_size=16):
     return [entropy(chunk) for chunk in chunks if len(chunk) > 0]
 
 # ------------------ Encoder Functions ------------------ #
-def affine_encrypt(text: str, a: int = 5, b: int = 8) -> bytes:
-    return bytes([(a * ord(c) + b) % 256 for c in text])
+
+def affine_encrypt_dataset_style(text, a=5, b=8):
+    result = ""
+    for char in text:
+        if char.isalpha():
+            x = ord(char.lower()) - ord('a')
+            enc = (a * x + b) % 26
+            result += chr(enc + ord('a'))
+        else:
+            result += char
+    return result.encode()
+
 
 def encrypt_text(plaintext: str, algorithm: str) -> str:
+    plaintext = ''.join(c for c in plaintext if c.isalnum() or c.isspace())
+
     data = plaintext.encode()
-    
-    # Minimum input warning for decoder (~32 bytes)
+
     if len(data) < 32:
-        raise ValueError("Input too short. Use at least ~6–8 words.")
+        raise ValueError("Use at least ~6–8 words (minimum 32 characters).")
 
     if algorithm == "AES":
         key = get_random_bytes(16)
         cipher = AES.new(key, AES.MODE_ECB)
-        while len(data) % 16 != 0:
-            data += b" "
-        encrypted = cipher.encrypt(data)
+        encrypted = cipher.encrypt(pad(data, 16))
 
     elif algorithm == "DES_FAMILY":
         key = get_random_bytes(8)
         cipher = DES.new(key, DES.MODE_ECB)
-        while len(data) % 8 != 0:
-            data += b" "
-        encrypted = cipher.encrypt(data)
+        encrypted = cipher.encrypt(pad(data, 8))
 
     elif algorithm == "RC4":
         key = get_random_bytes(16)
@@ -118,7 +113,7 @@ def encrypt_text(plaintext: str, algorithm: str) -> str:
         encrypted = cipher.encrypt(data)
 
     elif algorithm == "AFFINE":
-        encrypted = affine_encrypt(plaintext)
+        encrypted = affine_encrypt_dataset_style(plaintext)
 
     else:
         raise ValueError("Unknown algorithm")
@@ -151,7 +146,7 @@ def predict():
         if not ciphertext:
             return jsonify({"error": "No ciphertext provided"}), 400
 
-        # Validate hex input
+        # Validate hex
         try:
             raw_bytes = bytes.fromhex(ciphertext)
         except ValueError:
@@ -159,7 +154,7 @@ def predict():
 
         start = time.time()
 
-        # Extract features
+        # Feature extraction
         features = extract_features(ciphertext)
 
         # Model prediction
@@ -169,20 +164,22 @@ def predict():
         result = encoder.inverse_transform(prediction)[0]
         confidence = float(np.max(probs))
 
-        end = time.time()
-        latency = (end - start) * 1000  # ms
+        if result in ["AES", "RC4"] and confidence < 0.75:
+            result = "AES/RC4 (Ambiguous)"
 
-        # Additional metrics
+        end = time.time()
+        latency = (end - start) * 1000
+
+        # Extra metrics (for UI)
         ent = entropy(raw_bytes)
         chunk_entropy = entropy_chunks(raw_bytes)
         freq = byte_frequency(raw_bytes)
-        variance = byte_variance(freq)
+        variance = np.var(freq)
 
         return jsonify({
             "prediction": result,
             "confidence": confidence,
             "entropy": round(ent, 4),
-            "block_size": 8,
             "latency": round(latency, 2),
             "length": len(raw_bytes),
             "chunk_entropy": chunk_entropy[:20],
@@ -192,8 +189,10 @@ def predict():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+
 # ------------------ Encoder API ------------------ #
+
 @app.route("/encrypt", methods=["POST"])
 def encrypt():
     try:
@@ -213,8 +212,8 @@ def encrypt():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 # ------------------ Run ------------------ #
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
