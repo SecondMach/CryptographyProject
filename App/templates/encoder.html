@@ -180,7 +180,7 @@
                         </div>
 
                         <!-- BUTTON -->
-                        <button onclick="encryptText()" class="mt-6 w-full bg-gradient-to-r from-primary-dim to-secondary py-4 rounded-xl font-headline font-bold uppercase tracking-widest">
+                        <button id="encryptBtn" class="mt-6 w-full bg-gradient-to-r from-primary-dim to-secondary py-4 rounded-xl font-headline font-bold uppercase tracking-widest">
                             Encrypt Text
                         </button>
 
@@ -225,13 +225,5 @@
         </footer>
         <!-- script -->
         <script src="{{ url_for('static', filename='script.js') }}"></script>
-        <script>
-			const btn = document.getElementById('menuBtn');
-			const menu = document.getElementById('mobileMenu');
-
-			btn.addEventListener('click', () => {
-				menu.classList.toggle('hidden');
-			});
-		</script>
     </body>
 </html>
