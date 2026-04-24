@@ -106,35 +106,40 @@
     <body class="bg-background text-on-surface min-h-screen flex flex-col">
         <!-- TopNavBar -->
         <nav class="bg-slate-950/60 backdrop-blur-xl docked full-width top-0 sticky z-50 shadow-[0px_20px_40px_rgba(153,66,240,0.12)]">
-            <div class="flex justify-between items-center w-full px-8 h-20 bg-slate-900">
-                <div class="flex items-center gap-12">
-                    <span class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 font-['Space_Grotesk'] tracking-tight">CipherScope</span>
-                    <!-- Desktop Nav -->
-                    <div class="hidden md:flex gap-8 items-center">
-                        <a class="text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight hover:bg-white/5 px-3 py-1 rounded transition-all duration-300" href="/">Homepage</a>
-                        <a class="text-purple-400 border-b-2 border-purple-500 pb-1 font-['Space_Grotesk'] font-bold tracking-tight active:scale-95 transition-transform" href="/encoder">Encoder</a>
-                        <a class="text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight hover:bg-white/5 px-3 py-1 rounded transition-all duration-300" href="/decoder">Analyzer</a>
-                        <!-- <a class="text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight hover:bg-white/5 px-3 py-1 rounded transition-all duration-300" href="#">Vault</a> -->
-                        <!-- <a class="text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight hover:bg-white/5 px-3 py-1 rounded transition-all duration-300" href="#">Reports</a> -->
-                    </div>
+            <div class="flex justify-between items-center w-full px-4 md:px-8 py-4 bg-slate-900 relative">
+                <span class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 font-['Space_Grotesk'] tracking-tight">
+                    CipherScope
+                </span>
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center space-x-8">
+                    <a class="text-lg text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight px-3 py-1 rounded transition-all duration-300" href="/">
+                        Homepage
+                    </a>
+                    <a class="text-lg text-purple-400 font-['Space_Grotesk'] font-bold tracking-tight px-3 py-1 border-b-2 border-purple-500" href="/encoder">
+                        Encoder
+                    </a>
+                    <a class="text-lg text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight px-3 py-1 rounded transition-all duration-300" href="/decoder">
+                        Analyzer
+                    </a>
                 </div>
-                <div class="flex items-center gap-6">
-                    <div class="hidden lg:flex items-center bg-surface-container-low px-4 py-2 rounded-lg border border-outline-variant/20">
-                        <span class="material-symbols-outlined text-outline text-sm mr-2">search</span>
-                        <input class="bg-transparent border-none focus:ring-0 text-sm text-on-surface-variant w-48" placeholder="Search entropy logs..." type="text"/>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <button class="text-slate-400 hover:text-purple-400 transition-colors active:scale-95">
-                            <span class="material-symbols-outlined">notifications</span>
-                        </button>
-                        <button class="text-slate-400 hover:text-purple-400 transition-colors active:scale-95">
-                            <span class="material-symbols-outlined">settings</span>
-                        </button>
-                        <div class="h-10 w-10 rounded-full border-2 border-primary-dim/30 p-0.5">
-                            <img alt="Operator Profile" class="rounded-full w-full h-full object-cover" data-alt="Close-up portrait of a security operator avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZWCRuaiRavuNIS0QN0gdQUg-F7ZOfG0BLuJcT02cCVKfGraLCi8RQWv0FFt7dJ4jffY5mS4aAQtQruQ0sXrix1_3NDFQ0AtrinfMs61C6j7hS2penWD-63JHAahoqiZ6YZ9PyKKM2PNOfV0uYdzTaTl0kXcDXf9wN5q7PIgeNlIEGH2O2sEJ8m9qrVkoJiqOReoDg0TSJ-Nxz5kqAp4F_dZJ-SURsGYMRTlLSAgeedBkY6yDHyfBfB0-YkMByQI8fN2QwpoWLLwS6"/>
-                        </div>
-                    </div>
+                <!-- Mobile Bubble -->
+                <div class="flex md:hidden items-center bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
+                    <button id="menuBtn" class="material-symbols-outlined text-[#a5aac2]">
+                        menu
+                    </button>
                 </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden flex flex-col px-6 pb-4 space-y-4 bg-slate-900 border-b border-slate-800">
+                <a class="text-lg text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight px-3 py-2 rounded" href="/">
+                    Homepage
+                </a>
+                <a class="text-lg text-purple-400 font-['Space_Grotesk'] font-bold tracking-tight px-3 py-2 border-l-4 border-purple-500 bg-white/5 rounded" href="/encoder">
+                    Encoder
+                </a>
+                <a class="text-lg text-slate-400 hover:text-slate-200 transition-colors font-['Space_Grotesk'] font-bold tracking-tight px-3 py-2 rounded" href="/decoder">
+                    Analyzer
+                </a>
             </div>
         </nav>
 
@@ -211,19 +216,22 @@
 
         <!-- Footer -->
         <footer class="bg-slate-950 border-t border-white/5 py-12">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center px-8">
-                <div class="mb-8 md:mb-0">
-                    <p class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500">© 2024 CipherScope AI. Neural encryption active.</p>
-                </div>
-                <div class="flex flex-wrap justify-center gap-8">
-                    <a class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500 hover:text-purple-400 underline decoration-purple-500/30 underline-offset-4 transition-all opacity-80 hover:opacity-100 transition-opacity" href="#">Documentation</a>
-                    <a class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500 hover:text-purple-400 underline decoration-purple-500/30 underline-offset-4 transition-all opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy Policy</a>
-                    <a class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500 hover:text-purple-400 underline decoration-purple-500/30 underline-offset-4 transition-all opacity-80 hover:opacity-100 transition-opacity" href="#">Security Audit</a>
-                    <a class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500 hover:text-purple-400 underline decoration-purple-500/30 underline-offset-4 transition-all opacity-80 hover:opacity-100 transition-opacity" href="#">API Status</a>
-                </div>
+            <div class="max-w-7xl mx-auto flex flex-col justify-center items-center px-8 text-center space-y-4">
+                <div class="font-headline text-xl font-black tracking-tighter text-white">CipherScope Labs</div>
+                <p class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-slate-500">
+                    © 2026 CipherScope Labs. Neural encryption active.
+                </p>
             </div>
         </footer>
         <!-- script -->
         <script src="{{ url_for('static', filename='script.js') }}"></script>
+        <script>
+			const btn = document.getElementById('menuBtn');
+			const menu = document.getElementById('mobileMenu');
+
+			btn.addEventListener('click', () => {
+				menu.classList.toggle('hidden');
+			});
+		</script>
     </body>
 </html>
