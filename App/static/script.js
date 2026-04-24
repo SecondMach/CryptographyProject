@@ -44,15 +44,16 @@ async function encryptText() {
     const outputArea = document.getElementById("outputText");
 
     let plaintext = textArea ? textArea.value.trim() : "";
+    plaintext = plaintext.replace(/[^a-zA-Z0-9 ]/g, "");
     const algorithm = algoSelect ? algoSelect.value : "";
 
     if (!plaintext) {
-        alert("Please enter plaintext to encrypt");
+        console.error("Encryption Error: empty plaintext input");
         return;
     }
 
     if (!algorithm) {
-        alert("Please select an encryption algorithm");
+        console.error("Encryption Error: no algorithm selected");
         return;
     }
 
@@ -72,8 +73,7 @@ async function encryptText() {
         if (outputArea) outputArea.value = data.ciphertext;
 
     } catch (err) {
-        console.error(err);
-        alert("Encryption Error: " + err.message);
+        console.error("Encryption Error:", err.message);
     }
 }
 
@@ -102,11 +102,11 @@ async function analyzeText() {
     text = text.replace(/[^0-9a-fA-F]/g, "");
 
     if (!text) {
-        alert("Please enter ciphertext (hex)");
+        console.error("Analysis Error: empty ciphertext input");
         return;
     }
     if (text.length % 2 !== 0) {
-        alert("Hex must have even length");
+        console.error("Analysis Error: hex must have even length");
         return;
     }
 
@@ -131,8 +131,7 @@ async function analyzeText() {
         updateAnalysisUI(data);
 
     } catch (err) {
-        console.error(err);
-        alert("Error: " + err.message);
+        console.error("Analysis Error:", err.message);
     } finally {
         if (btn) {
             btn.innerText = "Analyze Neural Signature";
